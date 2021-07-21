@@ -6,7 +6,7 @@ export const productTypeDef = `
       unit_measurement:String!
       quantity: Int!
       category: Category!
-      provider: Int!
+      provider: Provider!
       
   }
   input ProductInput {
