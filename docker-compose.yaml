@@ -7,7 +7,7 @@ services:
     container_name: supermarket_db_cp
     expose:
       - '3306'
-    #command: --default-authentication-plugin=mysql_native_password
+   
     environment:
       - MYSQL_ROOT_PASSWORD=123
       - MYSQL_DATABASE=supermarket_db
@@ -50,9 +50,7 @@ services:
     command: python manage.py makemigrations supermarket_ms 
     command: python manage.py migrate
     command: python manage.py runserver 0.0.0.0:4000
-   # -e DB_HOST=172.17.0.2 -e DB_PORT=3306 -e DB_USER=supermarket -e DB_PASSWORD=2021 -e DB_NAME=supermarket_db 
-   #-e URL=0.0.0.0:4000 supermarket_ms
-    
+     
     
   supermarket_api:
     depends_on:
@@ -76,13 +74,3 @@ services:
     links:
         - supermarket_api:sm_api
  
-#
-#
-#  mysql:
-#    image: mysql:8.0.13
-#    command: --default-authentication-plugin=mysql_native_password
-#    environment:
-#      MYSQL_DATABASE: wordpress
-#      MYSQL_ROOT_PASSWORD: root
-#    volumes:
-#      - ~/docker/mysql-data:/var/lib/mysql
