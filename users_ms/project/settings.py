@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'supermarket_ms.apps.SupermarketMSConfig',
+    'users_ms.apps.UsersMSConfig',
     'corsheaders',
 ]
 

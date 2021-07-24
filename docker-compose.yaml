@@ -98,6 +98,7 @@ services:
     #    - '5000'
     links:
         - supermarket_ms:supermarket.ms
+        - users_ms:users.ms
   
   supermarket_proxy:
     depends_on:
