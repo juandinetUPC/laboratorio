@@ -2,12 +2,10 @@ version: "3.9"
 services:
 
   supermarket_db:
-#    image: supermarket_db:v2
     image: mysql:5.7
     container_name: supermarket_db_cp
     expose:
       - '3306'
-    #command: --default-authentication-plugin=mysql_native_password
     environment:
       - MYSQL_ROOT_PASSWORD=123
       - MYSQL_DATABASE=supermarket_db
@@ -16,15 +14,28 @@ services:
     volumes:
       - ./mysql-data:/var/lib/mysql
   
+  users_db:
+    image: mysql:5.7
+    container_name: users_db_cp
+    expose:
+      - '3307'
+    environment:
+      - MYSQL_ROOT_PASSWORD=123
+      - MYSQL_DATABASE=users_db
+      - MYSQL_USER=supermarket
+      - MYSQL_PASSWORD=2021
+    volumes:
+      - ./mysql-users-data:/var/lib/mysql   
+           
   phpmyadmin:
     depends_on:
-        - supermarket_db
+        - users_db
     image: phpmyadmin
     container_name: phpmyadmin_cp
     ports:
         - 8081:80
     links:
-      - supermarket_db:db
+      - users_db:db
   
   supermarket_ms:
     #image: supermarket_ms:latest
@@ -32,37 +43,59 @@ services:
         - supermarket_db
     build: ./supermarket_ms/
     container_name: supermarket_ms_cp
-#    ports:
-#        - 4000:4000
-    expose:
-        - '4000'
-        #- 8000:8000
+    ports:
+        - 4000:4000
+    #expose:
+    #    - '4000'
     links:
-        - supermarket_db:mysql
+      - supermarket_db:mysql
     environment:
-    - DB_HOST=mysql
-    - DB_USER=supermarket
-    - DB_PASSWORD=2021 
-    - DB_NAME=supermarket_db
+      - DB_HOST=mysql
+      - DB_USER=supermarket
+      - DB_PASSWORD=2021
+      - DB_NAME=supermarket_db
 #    volumes:
 #    - ./supermarket_ms:/code
     working_dir: /code
     command: python manage.py makemigrations supermarket_ms 
     command: python manage.py migrate
     command: python manage.py runserver 0.0.0.0:4000
-   # -e DB_HOST=172.17.0.2 -e DB_PORT=3306 -e DB_USER=supermarket -e DB_PASSWORD=2021 -e DB_NAME=supermarket_db 
-   #-e URL=0.0.0.0:4000 supermarket_ms
-    
+
+  users_ms:
+    #image: supermarket_ms:latest
+    depends_on:
+        - users_db
+    build: ./users_ms/
+    container_name: users_ms_cp
+    ports:
+        - 4001:4001
+    #expose:
+    #    - '4001'
+        
+    links:
+        - users_db:mysql
+    environment:
+    - DB_HOST=mysql
+    - DB_USER=supermarket
+    - DB_PASSWORD=2021
+    - DB_NAME=users_db
+#    volumes:
+#    - ./supermarket_ms:/code
+    working_dir: /code
+    command: python manage.py makemigrations users_ms 
+    command: python manage.py migrate
+    command: python manage.py runserver 0.0.0.0:4001
+      
     
   supermarket_api:
     depends_on:
         - supermarket_ms
     build: ./supermarket_api/
     container_name: supermarket_api_cp
-#    ports:
-#        - 5000:5000
-    expose:
-        - '5000'
+    ports:
+        - 5000:5000
+    #expose:
+    #    - '5000'
     links:
         - supermarket_ms:supermarket.ms
   
@@ -76,13 +109,3 @@ services:
     links:
         - supermarket_api:sm_api
  
-#
-#
-#  mysql:
-#    image: mysql:8.0.13
-#    command: --default-authentication-plugin=mysql_native_password
-#    environment:
-#      MYSQL_DATABASE: wordpress
-#      MYSQL_ROOT_PASSWORD: root
-#    volumes:
-#      - ~/docker/mysql-data:/var/lib/mysql
