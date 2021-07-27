@@ -89,16 +89,16 @@ services:
     
   supermarket_api:
     depends_on:
-        - supermarket_ms
+      - supermarket_ms
     build: ./supermarket_api/
     container_name: supermarket_api_cp
     ports:
-        - 5000:5000
+      - 5000:5000
     #expose:
     #    - '5000'
     links:
-        - supermarket_ms:supermarket.ms
-        - users_ms:users.ms
+      - supermarket_ms:supermarket.ms
+      - users_ms:users.ms
   
   supermarket_proxy:
     depends_on:
@@ -110,3 +110,14 @@ services:
     links:
         - supermarket_api:sm_api
  
+  # supermarket_wa:
+  #   depends_on:
+  #     - supermarket_api
+  #   build: ./supermarket_wa/
+  #   container_name: supermarket_wa_cp
+  #   #image:ebiven/vue-cli 
+  #   #command: npm run dev
+  #   #volumes:
+  #   #  - ./supermarket_wa:/code
+  #   ports:
+  #     - 8080:8080

@@ -18,7 +18,7 @@
 		]
 	},
 	"keywords": [],
-	"author": "javergarav",
+	"author": "Juandinet",
 	"license": "MIT",
 	"dependencies": {
 		"@koa/cors": "^2.2.1",

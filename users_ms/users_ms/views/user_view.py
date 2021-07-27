@@ -32,3 +32,13 @@ class UserDetail(mixins.RetrieveModelMixin,
 
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)
+
+class UserNameDetail(mixins.RetrieveModelMixin, 
+                        mixins.UpdateModelMixin,
+                        generics.GenericAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    lookup_field = 'user_name' 
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
