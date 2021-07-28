@@ -41,7 +41,8 @@
                 user_real_name:"",
                 error: false,
                 error_msg:"",
-                isAuth: true
+                isAuth: true,
+                user:[]
             }
         },
          created: function() {
@@ -54,29 +55,58 @@
             login(){
                 //console.log(this.user_name);
                 //console.log(this.user_password);
-                axios.get("http://localhost:4001/users/" + this.user_name)
-                     .then((result) => {
-                         //console.log(result.data)
-                         if (result.data.user_password==this.user_password) {
+                axios.post('http://localhost/graphql', 
+                  {query:`{userByAuth(user_name:"${this.user_name}"){user_name,user_password,user_real_name}}`
+                }).then(resp => {
+                  //console.log(resp.data)
+                  this.user=resp.data.data.userByAuth
+                  //console.log(this.user)
+                  if (this.user.user_password==this.user_password) {
                            console.log("USuario y contraseña correcta");
                            this.error= false
                            //localStorage.setItem('username', result.data.user_name);
-                           localStorage.setItem('current_username', result.data.user_name)
+                           localStorage.setItem('current_username', this.user.user_name)
                            localStorage.setItem('isAuth', true)
                            this.isAuth = true
-                           this.$router.push({name: "products", params:{ username:result.data.user_name }})
+                           this.$router.push({name: "products", params:{ username:this.user.user_name }})
                          }else{
                            this.error = true;
                            this.error_msg = "Usuario o contraseña incorrectos";
                            //console.log("USuario o contraseña incorrectos")
                           
                          }
-                     })
-                     .catch((error) => {
+                }).catch((error) => {
                           this.error = true;
-                           this.error_msg="El usuario no existe "+error;
+                          this.error_msg="El usuario no existe "//+error;
                          //alert("No es usuario");
                      });
+
+                
+
+
+                // axios.get("http://localhost:4001/users/" + this.user_name)
+                //      .then((result) => {
+                //          //console.log(result.data)
+                //          if (result.data.user_password==this.user_password) {
+                //            console.log("USuario y contraseña correcta");
+                //            this.error= false
+                //            //localStorage.setItem('username', result.data.user_name);
+                //            localStorage.setItem('current_username', result.data.user_name)
+                //            localStorage.setItem('isAuth', true)
+                //            this.isAuth = true
+                //            this.$router.push({name: "products", params:{ username:result.data.user_name }})
+                //          }else{
+                //            this.error = true;
+                //            this.error_msg = "Usuario o contraseña incorrectos";
+                //            //console.log("USuario o contraseña incorrectos")
+                          
+                //          }
+                //      })
+                //      .catch((error) => {
+                //           this.error = true;
+                //           this.error_msg="El usuario no existe "//+error;
+                //          //alert("No es usuario");
+                //      });
                
             },
             
@@ -185,7 +215,7 @@ h2.active {
 /* FORM TYPOGRAPHY*/
 
 input[type=button], input[type=submit], input[type=reset]  {
-  background-color: #56baed;
+  background-color: #283747;
   border: none;
   color: white;
   padding: 15px 80px;
@@ -207,7 +237,7 @@ input[type=button], input[type=submit], input[type=reset]  {
 }
 
 input[type=button]:hover, input[type=submit]:hover, input[type=reset]:hover  {
-  background-color: #39ace7;
+  background-color: #5294b3;
 }
 
 input[type=button]:active, input[type=submit]:active, input[type=reset]:active  {

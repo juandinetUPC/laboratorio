@@ -20,7 +20,8 @@
                 category_id: "",
                 name: "",
                 description: "",
-                category_in:""
+                category_in:"",
+                category:[]
             }
         },
 
@@ -38,11 +39,23 @@
                 this.username = this.$route.params.username
                 let self = this
 
-                axios.get("http://localhost:4000/categories/" + this.category_in)
-                    .then((result) => {
-                        self.category_id = result.data.id,
-                        self.name = result.data.name,
-                        self.description = result.data.description
+                // axios.get("http://localhost:4000/categories/" + this.category_in)
+                //     .then((result) => {
+                //         self.category_id = result.data.id,
+                //         self.name = result.data.name,
+                //         self.description = result.data.description
+                //     })
+                //     .catch((error) => {
+                //         alert("No existe esa categoría");
+                //     });
+                axios.post('http://localhost/graphql', 
+                  {query:`{categoryById(id: ${self.category_in})
+                  {id,name,description}}`}).then((result) => {
+                       console.log(result.data.data.categoryById)
+                        self.category = result.data.data.categoryById
+                        self.category_id = self.category.id,
+                        self.name = self.category.name,
+                        self.description = self.category.description
                     })
                     .catch((error) => {
                         alert("No existe esa categoría");

@@ -197,6 +197,7 @@ const userTypeDef = `
 const userQueries = `
       allUsers: [User]!
       userById(id: Int!): User!
+      userByAuth(user_name: String!): User!
   `;
 
 const userMutations = `
@@ -290,8 +291,8 @@ const resolvers$3 = {
 			getRequest(URL$3, ''),
 		    userById: (_, { id }) =>
 			generalRequest(`${URL$3}/${id}`, 'GET'),
-		    userByAuth: (_, { user_name, user_password }) =>
-			generalRequest(`${URL$3}/${user_password}`, 'GET'),
+		    userByAuth: (_, { user_name}) =>
+			generalRequest(`${URL$3}/${user_name}`, 'GET'),
 	},
 	Mutation: {
 		createUser: (_, { user }) =>
