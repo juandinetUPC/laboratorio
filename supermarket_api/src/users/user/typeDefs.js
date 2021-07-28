@@ -16,6 +16,7 @@ export const userTypeDef = `
 export const userQueries = `
       allUsers: [User]!
       userById(id: Int!): User!
+      userByAuth(user_name: String!): User!
   `;
 
 export const userMutations = `

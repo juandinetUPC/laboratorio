@@ -1,15 +1,13 @@
-
-
 <template>
   <div id="app">
     <div class="header">
 
       <h1>Supermarket</h1>
       <nav>
-        <button v-on:click="init" v-if="is_auth">Inicio</button>
+        <button v-on:click="init" v-if="is_auth==false">Inicio</button>
         <button v-on:click="categories" v-if="is_auth">Categorías</button>
         <button v-on:click="products" v-if="is_auth">Productos</button>
-        <button v-if="is_auth">Cerrar Sesión</button>
+        <button v-on:click="logout" v-if="is_auth">Cerrar Sesión</button>
       </nav>
     </div>
     <div class="main-component">
@@ -39,6 +37,7 @@
         if(this.$route.name != "user"){
           let username = localStorage.getItem("current_username")
           this.$router.push({name: "user", params:{ username: username }})
+          this.is_auth=false
         }
       },
 
@@ -55,14 +54,22 @@
           this.$router.push({name: "products", params:{ username: username }})
         }
       },
+      logout: function(){
+        localStorage.setItem('current_username', 'invitado')
+      localStorage.setItem('isAuth', false)
+      //this.is_auth=false
+        if(this.$route.name != "user"){
+          let username = localStorage.getItem("current_username")
+          this.$router.push({name: "user", params:{ username: username }})
+        }
+      },
 
     },
 
     beforeCreate: function(){
-      localStorage.setItem('current_username', 'Juan_Diego')
-      localStorage.setItem('isAuth', true)
-
-      this.$router.push({name: "user", params:{ username: 'Juan_Diego'}})
+      localStorage.setItem('current_username', 'invitado')
+      localStorage.setItem('isAuth', false)
+      this.$router.push({name: "user", params:{ username: 'invitado'}})
     }
   }
 </script>

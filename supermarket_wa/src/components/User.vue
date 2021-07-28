@@ -1,12 +1,13 @@
 
 
-<template>
+<template v-if="isAuth">
 
-  <div class="wrapper fadeInDown">
-  <div id="formContent">
+<div class="wrapper fadeInDown">
+   <div id="formContent">
     <!-- Tabs Titles -->
 
     <!-- Icon -->
+    
     <div class="fadeIn first">
       <img src="../assets/male-user-svgrepo-com.svg" id="icon" alt="User Icon" height="30px" />
     </div>
@@ -17,12 +18,10 @@
       <input type="password" id="password" class="fadeIn third" name="login" placeholder="password" v-model="user_password">
       <input type="submit" class="fadeIn fourth" value="Log In">
     </form>
-
+    
     <!-- Remind Passowrd -->
-    <div id="formFooter">
-      <a class="underlineHover" href="#">Forgot Password?</a>
-    </div>
-
+    <div class="alert alert-danger" role="alert" v-if="error">
+        {{error_msg}}</div>
   </div>
 </div>
 
@@ -39,43 +38,48 @@
                 user_name: "",
                 user_password:"",
                 user_email:"",
-                user_real_name:""
+                user_real_name:"",
+                error: false,
+                error_msg:"",
+                isAuth: true
             }
         },
-        created: function() {
-           // this.username = this.$route.params.username
-           this.username = this.user_name
-                   
-        },
+         created: function() {
+               this.$route.params.username=this.user_name;
+            this.username = this.user_name;
+            this.isAuth = localStorage.getItem('isAuth');
+           
+         },
         methods: {
             login(){
-                console.log(this.user_name);
-                console.log(this.user_password);
-                let json ={
-                    "user_name":this.user_name,
-                    "user_password":this.user_password
-
-                };
-                axios.post("http://localhost:5000/graphiql/", json)
-                .then(data =>{
-                    console.log(data)
-                })
+                //console.log(this.user_name);
+                //console.log(this.user_password);
+                axios.get("http://localhost:4001/users/" + this.user_name)
+                     .then((result) => {
+                         //console.log(result.data)
+                         if (result.data.user_password==this.user_password) {
+                           console.log("USuario y contraseña correcta");
+                           this.error= false
+                           //localStorage.setItem('username', result.data.user_name);
+                           localStorage.setItem('current_username', result.data.user_name)
+                           localStorage.setItem('isAuth', true)
+                           this.isAuth = true
+                           this.$router.push({name: "products", params:{ username:result.data.user_name }})
+                         }else{
+                           this.error = true;
+                           this.error_msg = "Usuario o contraseña incorrectos";
+                           //console.log("USuario o contraseña incorrectos")
+                          
+                         }
+                     })
+                     .catch((error) => {
+                          this.error = true;
+                           this.error_msg="El usuario no existe "+error;
+                         //alert("No es usuario");
+                     });
+               
             },
-            getUser: function() {
-
-                this.username = this.user_name
-                let self = this
-
-                axios.get("http://localhost:4001/users/" + this.user_id)
-                    .then((result) => {
-                        self.category_id = result.data.id,
-                        self.name = result.data.name,
-                        self.description = result.data.description
-                    })
-                    .catch((error) => {
-                        alert("No ese usuario");
-                    });
-            }
+            
         }
     }
 </script>
