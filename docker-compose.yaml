@@ -11,8 +11,9 @@ services:
       - MYSQL_DATABASE=supermarket_db
       - MYSQL_USER=supermarket
       - MYSQL_PASSWORD=2021
+    #Se agrega el directorio datos, para persistencia de los datos de la DB
     volumes:
-      - ./mysql-data:/var/lib/mysql
+      - /mnt/d/Laboratorio/supermarket_db/datos:/var/lib/mysql
   
   users_db:
     image: mysql:5.7
@@ -24,29 +25,32 @@ services:
       - MYSQL_DATABASE=users_db
       - MYSQL_USER=supermarket
       - MYSQL_PASSWORD=2021
+    #Se agrega el subdirectorio datos, para persistencia de los datos de la DB
     volumes:
-      - ./mysql-users-data:/var/lib/mysql   
-           
+      - /mnt/d/Laboratorio/users_db/datos:/var/lib/mysql
+               
   phpmyadmin:
     depends_on:
-        - users_db
+      - users_db
     image: phpmyadmin
     container_name: phpmyadmin_cp
     ports:
-        - 8081:80
+      - 8081:80
     links:
       - users_db:db
   
   supermarket_ms:
-    #image: supermarket_ms:latest
+    image: supermarket_ms:latest
     depends_on:
-        - supermarket_db
-    build: ./supermarket_ms/
+      - supermarket_db
+    build:
+      context: ./supermarket_ms/
+      dockerfile: Dockerfile
     container_name: supermarket_ms_cp
     ports:
-        - 4000:4000
-    #expose:
-    #    - '4000'
+      - 4000:4000
+    expose:
+      - '4000'
     links:
       - supermarket_db:mysql
     environment:
@@ -54,33 +58,35 @@ services:
       - DB_USER=supermarket
       - DB_PASSWORD=2021
       - DB_NAME=supermarket_db
-#    volumes:
-#    - ./supermarket_ms:/code
+    volumes:
+      - ./supermarket_ms:/code
     working_dir: /code
-    command: python manage.py makemigrations supermarket_ms 
-    command: python manage.py migrate
-    command: python manage.py runserver 0.0.0.0:4000
+    # command: python manage.py makemigrations supermarket_ms 
+    # command: python manage.py migrate
+    # command: python manage.py runserver 0.0.0.0:4000
 
   users_ms:
-    #image: supermarket_ms:latest
+    image: supermarket_ms:latest
     depends_on:
-        - users_db
-    build: ./users_ms/
+      - users_db
+    build: 
+      context: ./users_ms/
+      dockerfile: Dockerfile
     container_name: users_ms_cp
     ports:
-        - 4001:4001
-    #expose:
-    #    - '4001'
+      - 4001:4001
+    expose:
+      - '4001'
         
     links:
-        - users_db:mysql
+      - users_db:mysql
     environment:
-    - DB_HOST=mysql
-    - DB_USER=supermarket
-    - DB_PASSWORD=2021
-    - DB_NAME=users_db
-#    volumes:
-#    - ./supermarket_ms:/code
+      - DB_HOST=mysql
+      - DB_USER=supermarket
+      - DB_PASSWORD=2021
+      - DB_NAME=users_db
+    volumes:
+      - ./supermarket_ms:/code
     working_dir: /code
     command: python manage.py makemigrations users_ms 
     command: python manage.py migrate
@@ -94,30 +100,30 @@ services:
     container_name: supermarket_api_cp
     ports:
       - 5000:5000
-    #expose:
-    #    - '5000'
+    expose:
+      - '5000'
     links:
       - supermarket_ms:supermarket.ms
       - users_ms:users.ms
   
   supermarket_proxy:
     depends_on:
-        - supermarket_api
+      - supermarket_api
     build: ./supermarket_proxy/
     container_name: supermarket_proxy_cp
     ports:
-        - 80:80
+      - 80:80
     links:
-        - supermarket_api:sm_api
+      - supermarket_api:sm_api
  
   # supermarket_wa:
   #   depends_on:
   #     - supermarket_api
   #   build: ./supermarket_wa/
   #   container_name: supermarket_wa_cp
-  #   #image:ebiven/vue-cli 
-  #   #command: npm run dev
-  #   #volumes:
-  #   #  - ./supermarket_wa:/code
+  #   image: ebiven/vue-cli 
+  #   command: npm run dev
+  #   volumes:
+  #     - ./supermarket_wa:/code
   #   ports:
   #     - 8080:8080
