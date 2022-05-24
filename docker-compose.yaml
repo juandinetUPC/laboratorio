@@ -6,6 +6,7 @@ services:
     container_name: supermarket_db_cp
     expose:
       - '3306'
+   
     environment:
       - MYSQL_ROOT_PASSWORD=123
       - MYSQL_DATABASE=supermarket_db
@@ -88,10 +89,10 @@ services:
     volumes:
       - ./supermarket_ms:/code
     working_dir: /code
-    command: python manage.py makemigrations users_ms 
-    command: python manage.py migrate
-    command: python manage.py runserver 0.0.0.0:4001
-      
+    # command: python manage.py makemigrations users_ms 
+    # command: python manage.py migrate
+    # command: python manage.py runserver 0.0.0.0:4000
+     
     
   supermarket_api:
     depends_on:
@@ -116,14 +117,3 @@ services:
     links:
       - supermarket_api:sm_api
  
-  # supermarket_wa:
-  #   depends_on:
-  #     - supermarket_api
-  #   build: ./supermarket_wa/
-  #   container_name: supermarket_wa_cp
-  #   image: ebiven/vue-cli 
-  #   command: npm run dev
-  #   volumes:
-  #     - ./supermarket_wa:/code
-  #   ports:
-  #     - 8080:8080
